@@ -25,6 +25,7 @@ const envSchema = z.object({
     .string()
     .default("ghcr.io/jungle-grid/outreach-qwen-worker:latest"),
   JUNGLEGRID_OPTIMIZE_FOR: z.enum(["cost", "speed", "balanced"]).default("cost"),
+  JUNGLEGRID_REGISTRY_CREDENTIAL_ID: optionalSecret,
   JUNGLEGRID_POLL_INTERVAL_MS: z.coerce.number().int().min(250).default(3000),
   JUNGLEGRID_JOB_TIMEOUT_MS: z.coerce.number().int().min(1000).default(1_800_000),
   OLLAMA_MODEL: z.string().default("qwen2.5:3b"),

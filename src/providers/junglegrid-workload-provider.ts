@@ -206,6 +206,9 @@ export class JungleGridWorkloadProvider {
       name: `jungle-outreach-${workerJob}-${Date.now()}`,
       workload_type: this.env.JUNGLEGRID_DEFAULT_WORKLOAD_TYPE,
       image: this.env.JUNGLEGRID_DEFAULT_IMAGE,
+      ...(this.env.JUNGLEGRID_REGISTRY_CREDENTIAL_ID
+        ? { registry_credential_id: this.env.JUNGLEGRID_REGISTRY_CREDENTIAL_ID }
+        : {}),
       command,
       requires_gpu: true,
       gpu_count: 1,
