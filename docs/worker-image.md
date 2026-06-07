@@ -12,8 +12,8 @@ Override `IMAGE` to test another registry or tag.
 ## Strategy 1: lightweight model startup
 
 The default image installs Ollama from its official architecture-specific
-Linux package and includes the Python worker, Chromium, and
-Playwright dependencies. The worker starts or connects to Ollama and pulls
+Linux package and includes the standard-library Python worker. The worker
+starts or connects to Ollama and pulls
 `OLLAMA_MODEL` when Qwen mode begins. This keeps the image smaller but increases
 cold-start time and requires model registry access.
 

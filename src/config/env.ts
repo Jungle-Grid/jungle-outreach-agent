@@ -20,7 +20,7 @@ const envSchema = z.object({
   JUNGLEGRID_API_KEY: optionalSecret,
   JUNGLEGRID_API_BASE: z.string().url().default("https://api.junglegrid.dev"),
   JUNGLEGRID_MODE: outreachModeSchema.default("junglegrid-qwen"),
-  JUNGLEGRID_DEFAULT_WORKLOAD_TYPE: z.enum(["batch", "inference"]).default("batch"),
+  JUNGLEGRID_DEFAULT_WORKLOAD_TYPE: z.enum(["batch", "inference"]).default("inference"),
   JUNGLEGRID_DEFAULT_IMAGE: z
     .string()
     .default("ghcr.io/dejaguarkyng/outreach-qwen-worker:latest"),

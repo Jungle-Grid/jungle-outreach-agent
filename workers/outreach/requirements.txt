@@ -1,1 +1,1 @@
-playwright==1.52.0
+# The packaged worker currently uses only the Python standard library.
