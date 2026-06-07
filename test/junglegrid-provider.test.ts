@@ -8,6 +8,7 @@ const env = {
   JUNGLEGRID_MODE: "junglegrid-qwen",
   JUNGLEGRID_DEFAULT_WORKLOAD_TYPE: "batch",
   JUNGLEGRID_DEFAULT_IMAGE: "worker:test",
+  JUNGLEGRID_OPTIMIZE_FOR: "cost",
   JUNGLEGRID_POLL_INTERVAL_MS: 1,
   JUNGLEGRID_JOB_TIMEOUT_MS: 100,
   OLLAMA_MODEL: "qwen2.5:3b",
@@ -44,6 +45,9 @@ describe("Jungle Grid provider", () => {
     expect(payload.command).toContain("full-run-qwen");
     expect(payload.expected_artifacts).toHaveLength(6);
     expect(payload.environment.OLLAMA_MODEL).toBe("qwen2.5:3b");
+    expect(payload.requires_gpu).toBe(true);
+    expect(payload.gpu_count).toBe(1);
+    expect(payload.optimize_for).toBe("cost");
   });
 
   it("never accepts local mode for remote submission", async () => {

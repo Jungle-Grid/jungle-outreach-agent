@@ -207,8 +207,10 @@ export class JungleGridWorkloadProvider {
       workload_type: this.env.JUNGLEGRID_DEFAULT_WORKLOAD_TYPE,
       image: this.env.JUNGLEGRID_DEFAULT_IMAGE,
       command,
+      requires_gpu: true,
+      gpu_count: 1,
       model_size_gb: mode === "junglegrid-qwen" ? 3 : 1,
-      optimize_for: "balanced",
+      optimize_for: this.env.JUNGLEGRID_OPTIMIZE_FOR,
       environment: {
         OLLAMA_MODEL: this.env.OLLAMA_MODEL,
         OLLAMA_HOST: this.env.OLLAMA_HOST,
