@@ -568,14 +568,21 @@ def write_json(output: Path, name: str, value: Any) -> None:
     temporary.replace(output / name)
 
 
+def default_input_path() -> Path:
+    script_dir = Path(__file__).resolve().parent
+    image_input = script_dir / "examples" / "sample-worker-input.json"
+    if image_input.exists():
+        return image_input
+    return script_dir.parent.parent / "examples" / "sample-worker-input.json"
+
+
 def run(args: argparse.Namespace) -> int:
     if args.health_check:
         print("ok")
         return 0
     started = utc_now()
     output = Path(args.output)
-    default_input = Path(__file__).resolve().parents[2] / "examples" / "sample-worker-input.json"
-    input_path = Path(args.input) if args.input else default_input
+    input_path = Path(args.input) if args.input else default_input_path()
     prospects = discover(args.target, input_path, args.category)
     notes = research(prospects)
     scored = score(prospects, notes)
