@@ -31,13 +31,13 @@ jobs:
       - uses: docker/metadata-action@v5
         id: meta
         with:
-          images: ghcr.io/dejaguarkyng/outreach-qwen-worker
+          images: ghcr.io/jungle-grid/outreach-qwen-worker
           tags: |
             type=ref,event=tag
             type=raw,value=dev,enable=${{ github.event_name == 'workflow_dispatch' }}
             type=raw,value=latest,enable=${{ github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/') }}
           labels: |
-            org.opencontainers.image.source=https://github.com/dejaguarkyng/jungle-outreach-agent
+            org.opencontainers.image.source=https://github.com/Jungle-Grid/jungle-outreach-agent
             org.opencontainers.image.description=Jungle Grid-powered outreach research and draft worker
             org.opencontainers.image.licenses=Apache-2.0
       - uses: docker/build-push-action@v6
