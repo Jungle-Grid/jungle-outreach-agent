@@ -162,7 +162,7 @@ Add release screenshots under `docs/screenshots/` and link them here.
 ```
 
 The release image is
-`ghcr.io/jungle-grid/outreach-qwen-worker:latest`. Two supported strategies are
+`ghcr.io/dejaguarkyng/outreach-qwen-worker:latest`. Two supported strategies are
 documented in [docs/worker-image.md](docs/worker-image.md): pull the model at job
 start, or publish a larger image with the model preloaded.
 
