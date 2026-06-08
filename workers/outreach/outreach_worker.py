@@ -4,11 +4,13 @@
 from __future__ import annotations
 
 import argparse
+import http.client
 import json
 import logging
 import os
 import random
 import re
+import socket
 import subprocess
 import sys
 import time
@@ -525,7 +527,7 @@ def website_contacts(start_urls: list[str] | str, source_type: str = "official_w
         visited.add(current)
         try:
             text = fetch_text(current)
-        except (urllib.error.URLError, TimeoutError, ValueError):
+        except (urllib.error.URLError, TimeoutError, ValueError, socket.timeout, http.client.HTTPException):
             continue
         latest_text = text
         parsed_current = urllib.parse.urlparse(current)
@@ -782,7 +784,7 @@ def github_readme(full_name: str, default_branch: str) -> str:
     readme_url = f"https://raw.githubusercontent.com/{full_name}/{default_branch}/README.md"
     try:
         return fetch_text(readme_url, limit=100_000)
-    except (urllib.error.URLError, TimeoutError, ValueError):
+    except (urllib.error.URLError, TimeoutError, ValueError, socket.timeout, http.client.HTTPException):
         return ""
 
 

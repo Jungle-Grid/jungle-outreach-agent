@@ -4,6 +4,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import http.client
 from datetime import datetime
 from unittest.mock import patch
 from pathlib import Path
@@ -159,6 +160,16 @@ class WorkerSmokeTest(unittest.TestCase):
             emails = {row["email"] for row in prospects}
             self.assertNotIn("avery@agent-runtime.dev", emails)
             self.assertTrue(any(row["exclusion_rule_triggered"] for row in skipped))
+
+    def test_website_contacts_ignores_remote_disconnects(self):
+        with patch.object(
+            worker_module,
+            "fetch_text",
+            side_effect=http.client.RemoteDisconnected("Remote end closed connection without response"),
+        ):
+            contacts, text = worker_module.website_contacts("https://example.com")
+        self.assertEqual(contacts, [])
+        self.assertEqual(text, "")
 
     def test_bad_prospect_rules_and_readme_cleaning(self):
         microsoft = worker_module.normalize_prospect(
