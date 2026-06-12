@@ -2608,23 +2608,64 @@ def parse_qwen_json_response(response: dict[str, Any]) -> Any:
         raise
 
 
+QWEN_ITEM_ALIASES = ("items", "results", "prospects", "drafts", "analyses", "validations")
+QWEN_WRAPPER_KEYS = ("result", "analysis", "output", "data", "response")
+
+
+def qwen_items_from_mapping(value: dict[str, Any]) -> list[dict[str, Any]] | None:
+    if not value:
+        return None
+    if any(key in value for key in (*QWEN_ITEM_ALIASES, *QWEN_WRAPPER_KEYS)):
+        return None
+    items: list[dict[str, Any]] = []
+    for key, nested in value.items():
+        if not isinstance(nested, dict):
+            return None
+        item = dict(nested)
+        item.setdefault("prospect_id", str(key))
+        items.append(item)
+    if any("prospect_id" in item for item in items):
+        return items
+    return None
+
+
 def unwrap_qwen_object(value: Any, required_key: str | None = None) -> dict[str, Any]:
     if isinstance(value, dict) and (required_key is None or required_key in value):
         return value
     if isinstance(value, list) and required_key == "items":
         return {"items": value}
     if isinstance(value, dict):
-        for key in ("result", "analysis", "output", "data", "response"):
+        if required_key == "items":
+            for key in QWEN_ITEM_ALIASES:
+                nested = value.get(key)
+                if isinstance(nested, list):
+                    return {"items": nested}
+                if isinstance(nested, dict):
+                    mapped_items = qwen_items_from_mapping(nested)
+                    if mapped_items is not None:
+                        return {"items": mapped_items}
+            mapped_items = qwen_items_from_mapping(value)
+            if mapped_items is not None:
+                return {"items": mapped_items}
+        for key in QWEN_WRAPPER_KEYS:
             nested = value.get(key)
             if isinstance(nested, dict) and (required_key is None or required_key in nested):
                 return nested
             if isinstance(nested, list) and required_key == "items":
                 return {"items": nested}
+            if isinstance(nested, dict) and required_key == "items":
+                mapped_items = qwen_items_from_mapping(nested)
+                if mapped_items is not None:
+                    return {"items": mapped_items}
         for nested in value.values():
             if isinstance(nested, dict) and (required_key is None or required_key in nested):
                 return nested
             if isinstance(nested, list) and required_key == "items":
                 return {"items": nested}
+            if isinstance(nested, dict) and required_key == "items":
+                mapped_items = qwen_items_from_mapping(nested)
+                if mapped_items is not None:
+                    return {"items": mapped_items}
     raise ValueError(
         f"Qwen response did not return a JSON object containing {required_key}."
         if required_key
