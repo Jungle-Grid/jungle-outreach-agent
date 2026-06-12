@@ -33,9 +33,9 @@ are surfaced from ZeptoMail as delivery/configuration errors.
 ```bash
 ZEPTOMAIL_API_KEY=
 ZEPTOMAIL_API_BASE=
-ZEPTOMAIL_FROM_EMAIL=bbg@junglegrid.dev
-ZEPTOMAIL_FROM_NAME=Benedict from Jungle Grid
-ZEPTOMAIL_REPLY_TO=bbg@junglegrid.dev
+ZEPTOMAIL_FROM_EMAIL=sender@example.com
+ZEPTOMAIL_FROM_NAME=OpenLine
+ZEPTOMAIL_REPLY_TO=sender@example.com
 ZEPTOMAIL_TEST_RECIPIENT=
 EMAIL_SEND_MODE=disabled
 DRY_RUN=true

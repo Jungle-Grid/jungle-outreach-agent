@@ -37,11 +37,11 @@ function configureZeptoEnv(overrides: Record<string, string | undefined> = {}) {
   process.env.EMAIL_SEND_MODE = "manual_approval_only";
   process.env.ZEPTOMAIL_API_KEY = "secret-token";
   process.env.ZEPTOMAIL_API_BASE = "https://api.zeptomail.com";
-  process.env.ZEPTOMAIL_FROM_EMAIL = "bbg@junglegrid.dev";
-  process.env.ZEPTOMAIL_FROM_NAME = "Benedict from Jungle Grid";
-  process.env.ZEPTOMAIL_REPLY_TO = "bbg@junglegrid.dev";
+  process.env.ZEPTOMAIL_FROM_EMAIL = "sender@example.com";
+  process.env.ZEPTOMAIL_FROM_NAME = "OpenLine";
+  process.env.ZEPTOMAIL_REPLY_TO = "sender@example.com";
   process.env.ZEPTOMAIL_TEST_RECIPIENT = "operator@example.com";
-  process.env.JUNGLEGRID_SITE = "https://junglegrid.dev";
+  process.env.DEFAULT_ALLOWED_OUTREACH_URL = "https://junglegrid.dev";
   process.env.MAX_DRAFTS_PER_DOMAIN = "2";
   for (const [key, value] of Object.entries(overrides)) {
     if (value === undefined) {
@@ -131,11 +131,11 @@ describe("ZeptoMail service", () => {
     expect(String(url)).toBe("https://api.zeptomail.com/v1.1/email");
     expect(headers.Authorization).toBe("Zoho-enczapikey secret-token");
     expect(payload.from).toEqual({
-      address: "bbg@junglegrid.dev",
-      name: "Benedict from Jungle Grid",
+      address: "sender@example.com",
+      name: "OpenLine",
     });
     expect(payload.to[0].email_address.address).toBe("jane@acme.dev");
-    expect(payload.reply_to[0].address).toBe("bbg@junglegrid.dev");
+    expect(payload.reply_to[0].address).toBe("sender@example.com");
     expect(payload.textbody).toBe(validBody);
     expect(payload).not.toHaveProperty("htmlbody");
     expect(payload).not.toHaveProperty("attachments");

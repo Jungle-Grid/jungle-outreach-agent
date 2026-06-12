@@ -1,5 +1,5 @@
 import {
-  JUNGLEGRID_SITE,
+  DEFAULT_ALLOWED_OUTREACH_URL,
   MAX_DRAFT_WORDS,
   MAX_SUBJECT_LENGTH,
   MIN_DRAFT_WORDS,
@@ -40,7 +40,7 @@ export function validateDraftContent(
   const errors: string[] = [];
   const wordCount = countWords(body);
   const links = extractLinks(`${subject}\n${body}`);
-  const allowedLink = options.allowedLink ?? JUNGLEGRID_SITE;
+  const allowedLink = options.allowedLink ?? DEFAULT_ALLOWED_OUTREACH_URL;
 
   if (wordCount < MIN_DRAFT_WORDS || wordCount > MAX_DRAFT_WORDS) {
     errors.push(`Body must contain ${MIN_DRAFT_WORDS}-${MAX_DRAFT_WORDS} words; found ${wordCount}.`);

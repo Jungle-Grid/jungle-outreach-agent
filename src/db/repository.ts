@@ -1689,7 +1689,7 @@ export class OutreachRepository {
       modelName: env.OLLAMA_MODEL,
       workerImage: env.JUNGLEGRID_DEFAULT_IMAGE,
       dryRun: env.DRY_RUN,
-      junglegridSite: env.JUNGLEGRID_SITE,
+      defaultAllowedOutreachUrl: env.DEFAULT_ALLOWED_OUTREACH_URL,
     };
     const rows = this.db.prepare("SELECT key, value FROM settings").all() as Array<{
       key: string;

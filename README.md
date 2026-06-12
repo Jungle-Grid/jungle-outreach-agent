@@ -12,6 +12,9 @@
   <p>
     <a href="https://github.com/Jungle-Grid/openline"><img alt="GitHub repository" src="https://img.shields.io/badge/GitHub-Repository-181717?logo=github" /></a>
     <a href="docs/architecture.md"><img alt="Documentation" src="https://img.shields.io/badge/Docs-Architecture-2563eb" /></a>
+    <a href="https://discord.gg/kpJqxXFFCs"><img alt="Join the Jungle Grid Discord" src="https://img.shields.io/badge/Community-Discord-5865f2?logo=discord&logoColor=white" /></a>
+    <a href="https://x.com/jungle_grid"><img alt="Follow Jungle Grid on X" src="https://img.shields.io/badge/Follow-@jungle__grid-000000?logo=x" /></a>
+    <a href="mailto:run@junglegrid.dev"><img alt="Email Jungle Grid" src="https://img.shields.io/badge/Email-run%40junglegrid.dev-16a34a" /></a>
     <a href="https://junglegrid.dev"><img alt="Powered by Jungle Grid" src="https://img.shields.io/badge/Powered%20by-Jungle%20Grid-7c3aed" /></a>
     <a href="SECURITY.md"><img alt="Security contact" src="https://img.shields.io/badge/Contact-security%40junglegrid.dev-0f766e" /></a>
     <a href="LICENSE"><img alt="Apache-2.0 license" src="https://img.shields.io/badge/License-Apache--2.0-blue" /></a>

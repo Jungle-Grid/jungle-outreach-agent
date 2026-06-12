@@ -1,6 +1,6 @@
 import { z } from "zod";
 import {
-  JUNGLEGRID_SITE,
+  DEFAULT_ALLOWED_OUTREACH_URL,
   MAX_DRAFT_WORDS,
   MAX_SUBJECT_LENGTH,
   MIN_DRAFT_WORDS,
@@ -738,7 +738,7 @@ export const settingsSchema = z.object({
   modelName: z.string().trim().min(1),
   workerImage: z.string().trim().min(1),
   dryRun: z.boolean(),
-  junglegridSite: z.literal(JUNGLEGRID_SITE),
+  defaultAllowedOutreachUrl: z.literal(DEFAULT_ALLOWED_OUTREACH_URL),
 });
 
 export type OutreachSettings = z.infer<typeof settingsSchema>;

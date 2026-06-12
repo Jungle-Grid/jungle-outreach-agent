@@ -1,5 +1,5 @@
-export const JUNGLEGRID_SITE = "https://junglegrid.dev" as const;
-export const ALLOWED_OUTREACH_LINKS = [JUNGLEGRID_SITE] as const;
+export const DEFAULT_ALLOWED_OUTREACH_URL = "https://junglegrid.dev" as const;
+export const ALLOWED_OUTREACH_LINKS = [DEFAULT_ALLOWED_OUTREACH_URL] as const;
 export const MIN_DRAFT_WORDS = 70;
 export const MAX_DRAFT_WORDS = 140;
 export const MAX_SUBJECT_LENGTH = 79;

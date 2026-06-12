@@ -104,8 +104,8 @@ export function SettingsForm({
           <Field label="Worker image" error={form.formState.errors.workerImage?.message}>
             <Input {...form.register("workerImage")} />
           </Field>
-          <Field label="Jungle Grid site" error={form.formState.errors.junglegridSite?.message}>
-            <Input readOnly {...form.register("junglegridSite")} />
+          <Field label="Default allowed outreach URL" error={form.formState.errors.defaultAllowedOutreachUrl?.message}>
+            <Input readOnly {...form.register("defaultAllowedOutreachUrl")} />
           </Field>
           <label className="flex items-center gap-3 rounded-md border bg-black/20 px-3 py-2 text-sm">
             <input type="checkbox" className="accent-green-500" {...form.register("dryRun")} />

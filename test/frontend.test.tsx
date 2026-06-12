@@ -44,9 +44,9 @@ const draft: EmailDraft & { prospect: Prospect } = {
   id: "22222222-2222-4222-8222-222222222222",
   prospectId: prospect.id,
   toEmail: prospect.email,
-  fromEmail: "bbg@junglegrid.dev",
-  fromName: "Benedict from Jungle Grid",
-  replyTo: "bbg@junglegrid.dev",
+  fromEmail: "sender@example.com",
+  fromName: "OpenLine",
+  replyTo: "sender@example.com",
   subject: "Jungle Grid x agent runtime",
   body,
   wordCount: body.split(/\s+/).length,
@@ -107,7 +107,7 @@ describe("operator frontend", () => {
         modelName: "qwen2.5:3b",
         workerImage: "worker:test",
         dryRun: true,
-        junglegridSite: "https://example.com",
+        defaultAllowedOutreachUrl: "https://example.com",
       }).success,
     ).toBe(false);
   });
