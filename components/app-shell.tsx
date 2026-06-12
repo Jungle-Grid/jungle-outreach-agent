@@ -33,10 +33,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <aside className="border-b bg-black/25 lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r">
         <div className="flex h-16 items-center gap-3 border-b px-5">
           <div className="overflow-hidden rounded-lg bg-white">
-            <Image src="/openline-logo.png" alt="Openline" width={32} height={32} priority />
+            <Image src="/openline-logo.png" alt="OpenLine" width={32} height={32} priority />
           </div>
           <div>
-            <p className="text-sm font-semibold">Openline</p>
+            <p className="text-sm font-semibold">OpenLine</p>
             <p className="text-xs text-muted-foreground">Prospect intelligence</p>
           </div>
         </div>

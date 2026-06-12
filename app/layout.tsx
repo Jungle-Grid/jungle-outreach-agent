@@ -4,8 +4,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Openline",
-    template: "%s | Openline",
+    default: "OpenLine",
+    template: "%s | OpenLine",
   },
   description: "Public-evidence outreach research, internal draft review, and manual ZeptoMail sends.",
   icons: {
