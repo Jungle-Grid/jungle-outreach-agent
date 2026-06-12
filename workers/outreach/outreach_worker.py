@@ -2593,7 +2593,15 @@ def parse_qwen_json_response(response: dict[str, Any]) -> Any:
     if not raw:
         raise ValueError("Qwen returned an empty response.")
     try:
-        return json.loads(raw)
+        parsed = json.loads(raw)
+        for _ in range(2):
+            if not isinstance(parsed, str):
+                break
+            nested = parsed.strip()
+            if not nested or nested[0] not in "[{":
+                break
+            parsed = json.loads(nested)
+        return parsed
     except json.JSONDecodeError:
         match = re.search(r"```(?:json)?\s*(\{.*?\}|\[.*?\])\s*```", raw, re.I | re.S)
         if match:
@@ -2608,18 +2616,25 @@ def parse_qwen_json_response(response: dict[str, Any]) -> Any:
         raise
 
 
-QWEN_ITEM_ALIASES = ("items", "results", "prospects", "drafts", "analyses", "validations")
-QWEN_WRAPPER_KEYS = ("result", "analysis", "output", "data", "response")
-
-
 def qwen_items_from_mapping(value: dict[str, Any]) -> list[dict[str, Any]] | None:
     if not value:
-        return None
-    if any(key in value for key in (*QWEN_ITEM_ALIASES, *QWEN_WRAPPER_KEYS)):
         return None
     items: list[dict[str, Any]] = []
     for key, nested in value.items():
         if not isinstance(nested, dict):
+            return None
+        if not any(
+            field in nested
+            for field in (
+                "qualified",
+                "qualification_reason",
+                "research_analysis",
+                "score_explanation",
+                "suggested_angle",
+                "status",
+                "reasons",
+            )
+        ):
             return None
         item = dict(nested)
         item.setdefault("prospect_id", str(key))
@@ -2629,48 +2644,125 @@ def qwen_items_from_mapping(value: dict[str, Any]) -> list[dict[str, Any]] | Non
     return None
 
 
+def find_qwen_items(value: Any, depth: int = 0) -> list[dict[str, Any]] | None:
+    if depth > 8:
+        return None
+    if isinstance(value, list):
+        if value and all(isinstance(item, dict) for item in value):
+            items = [dict(item) for item in value]
+            if any("prospect_id" in item for item in items):
+                return items
+        for nested in value:
+            found = find_qwen_items(nested, depth + 1)
+            if found is not None:
+                return found
+        return None
+    if not isinstance(value, dict):
+        return None
+    direct = value.get("items")
+    if isinstance(direct, list):
+        return [dict(item) for item in direct if isinstance(item, dict)]
+    if isinstance(direct, dict):
+        mapped = qwen_items_from_mapping(direct)
+        if mapped is not None:
+            return mapped
+    mapped = qwen_items_from_mapping(value)
+    if mapped is not None:
+        return mapped
+    for nested in value.values():
+        found = find_qwen_items(nested, depth + 1)
+        if found is not None:
+            return found
+    return None
+
+
+def describe_qwen_shape(value: Any) -> str:
+    if isinstance(value, dict):
+        keys = [str(key)[:40] for key in list(value)[:12]]
+        return f"object keys={keys}"
+    if isinstance(value, list):
+        item_types = sorted({type(item).__name__ for item in value[:12]})
+        return f"array length={len(value)} item_types={item_types}"
+    return type(value).__name__
+
+
 def unwrap_qwen_object(value: Any, required_key: str | None = None) -> dict[str, Any]:
     if isinstance(value, dict) and (required_key is None or required_key in value):
         return value
     if isinstance(value, list) and required_key == "items":
         return {"items": value}
+    if required_key == "items":
+        items = find_qwen_items(value)
+        if items is not None:
+            return {"items": items}
     if isinstance(value, dict):
-        if required_key == "items":
-            for key in QWEN_ITEM_ALIASES:
-                nested = value.get(key)
-                if isinstance(nested, list):
-                    return {"items": nested}
-                if isinstance(nested, dict):
-                    mapped_items = qwen_items_from_mapping(nested)
-                    if mapped_items is not None:
-                        return {"items": mapped_items}
-            mapped_items = qwen_items_from_mapping(value)
-            if mapped_items is not None:
-                return {"items": mapped_items}
-        for key in QWEN_WRAPPER_KEYS:
-            nested = value.get(key)
-            if isinstance(nested, dict) and (required_key is None or required_key in nested):
-                return nested
-            if isinstance(nested, list) and required_key == "items":
-                return {"items": nested}
-            if isinstance(nested, dict) and required_key == "items":
-                mapped_items = qwen_items_from_mapping(nested)
-                if mapped_items is not None:
-                    return {"items": mapped_items}
         for nested in value.values():
             if isinstance(nested, dict) and (required_key is None or required_key in nested):
                 return nested
-            if isinstance(nested, list) and required_key == "items":
-                return {"items": nested}
-            if isinstance(nested, dict) and required_key == "items":
-                mapped_items = qwen_items_from_mapping(nested)
-                if mapped_items is not None:
-                    return {"items": mapped_items}
     raise ValueError(
-        f"Qwen response did not return a JSON object containing {required_key}."
+        f"Qwen response did not return a JSON object containing {required_key}; "
+        f"received {describe_qwen_shape(value)}."
         if required_key
-        else "Qwen response did not return a JSON object."
+        else f"Qwen response did not return a JSON object; received {describe_qwen_shape(value)}."
     )
+
+
+QWEN_ANALYSIS_SCHEMA = {
+    "type": "object",
+    "required": ["items"],
+    "properties": {
+        "items": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "prospect_id",
+                    "qualified",
+                    "qualification_reason",
+                    "research_analysis",
+                    "score_explanation",
+                    "suggested_angle",
+                ],
+                "properties": {
+                    "prospect_id": {"type": "string"},
+                    "qualified": {"type": "boolean"},
+                    "qualification_reason": {"type": "string"},
+                    "research_analysis": {"type": "string"},
+                    "score_explanation": {"type": "string"},
+                    "suggested_angle": {"type": "string"},
+                },
+            },
+        }
+    },
+}
+
+
+QWEN_VALIDATION_SCHEMA = {
+    "type": "object",
+    "required": ["items"],
+    "properties": {
+        "items": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["prospect_id", "status", "reasons"],
+                "properties": {
+                    "prospect_id": {"type": "string"},
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "send_ready",
+                            "manual_review_required",
+                            "regeneration_required",
+                            "excluded",
+                        ],
+                    },
+                    "reasons": {"type": "array", "items": {"type": "string"}},
+                },
+            },
+        }
+    },
+}
 
 
 def qwen_semantic_analysis(
@@ -2723,7 +2815,7 @@ def qwen_semantic_analysis(
                 "evidence. Return valid JSON for every prospect ID."
             ),
             "prompt": json.dumps(prompt),
-            "format": "json",
+            "format": QWEN_ANALYSIS_SCHEMA,
             "stream": False,
             "options": {"temperature": 0.1},
         },
@@ -2836,7 +2928,7 @@ def qwen_semantic_validate_drafts(
             "model": model,
             "system": "You are a fail-closed outreach semantic validator. Return valid JSON only.",
             "prompt": json.dumps(prompt),
-            "format": "json",
+            "format": QWEN_VALIDATION_SCHEMA,
             "stream": False,
             "options": {"temperature": 0.0},
         },

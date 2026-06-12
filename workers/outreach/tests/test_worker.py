@@ -376,6 +376,60 @@ restricted_sources:
         self.assertEqual(set(analysis), {"p1"})
         self.assertTrue(analysis["p1"]["qualified"])
 
+    def test_qwen_semantic_analysis_accepts_deeply_nested_items_payload(self):
+        prospects = [
+            {
+                "prospect_id": "p1",
+                "project": "acme/runtime",
+                "category": "agent_compute",
+                "project_description": "Agent runtime",
+                "diagnostics": {"has_campaign_workload_signal": True},
+            }
+        ]
+        notes = [
+            {
+                "prospect_id": "p1",
+                "summary": "Runtime executes long-running jobs.",
+                "personalization_detail": "Long-running jobs retain logs.",
+                "junglegrid_relevance": "Execution fit.",
+                "evidence_urls": ["https://example.dev/runtime"],
+            }
+        ]
+        response = {
+            "response": json.dumps(
+                {
+                    "output": {
+                        "semantic_analysis": {
+                            "prospect_analyses": [
+                                {
+                                    "prospect_id": "p1",
+                                    "qualified": True,
+                                    "qualification_reason": "Direct durable workload evidence.",
+                                    "research_analysis": "The runtime executes long-running jobs and retains logs.",
+                                    "score_explanation": "Primary evidence supports workload and integration fit.",
+                                    "suggested_angle": "Execution substrate beneath the existing runtime.",
+                                }
+                            ]
+                        }
+                    }
+                }
+            )
+        }
+        with patch.object(worker_module, "request_json", return_value=response) as request:
+            analysis = worker_module.qwen_semantic_analysis(prospects, notes, "qwen-test")
+        self.assertEqual(set(analysis), {"p1"})
+        self.assertEqual(
+            request.call_args.kwargs["payload"]["format"],
+            worker_module.QWEN_ANALYSIS_SCHEMA,
+        )
+
+    def test_qwen_json_parser_accepts_double_encoded_json(self):
+        payload = {"items": [{"prospect_id": "p1"}]}
+        parsed = worker_module.parse_qwen_json_response(
+            {"response": json.dumps(json.dumps(payload))}
+        )
+        self.assertEqual(parsed, payload)
+
     def test_qwen_json_parser_accepts_fenced_json(self):
         parsed = worker_module.parse_qwen_json_response(
             {"response": '```json\n{"status":"send_ready","reasons":[]}\n```'}
